@@ -35,7 +35,7 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
         ?>
 
 
-
+<!-- Loodud sensorinimedega nupud + perioodinupud + algus ning lõpu vahemike jaoks mõeldud lahtrid (käsitsi valimisiseks) + töötav ChartJS graafik -->
 
         <?php if ($sid): ?>
             <br>
