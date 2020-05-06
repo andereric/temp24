@@ -58,16 +58,20 @@ class TemperaturesController extends Controller
                 $start = 'DATE_FORMAT(NOW() ,\'%Y-%m-01\')';
                 $end = 'NOW()';
             }
-            $temperatures = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->all();
-            $average = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->average('temperature');
-            $minimum = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->min('temperature');
-            $maximum = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->max('temperature');
+            $whereClause = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)]);
+            $temperatures = $whereClause->all();
+            $average = $whereClause->average('temperature');
+            $minimum = $whereClause->min('temperature');
+            $maximum = $whereClause->max('temperature');
         } else {
+            $whereClauseElse = Temperatures::find()->where(['sid' => $sid]);
             $temperatures = Temperatures::find()->where(['sid' => $sid])->all(); // otsib temperatuuri tabelis sid põhjal kõikide temperatuuride read
-            $average = Temperatures::find()->where(['sid' => $sid])->average('temperature');
-            $minimum = Temperatures::find()->where(['sid' => $sid])->min('temperature');
-            $maximum = Temperatures::find()->where(['sid' => $sid])->max('temperature');
+            $average = $whereClauseElse->average('temperature');
+            $minimum = $whereClauseElse->min('temperature');
+            $maximum = $whereClauseElse->max('temperature');
         };
+
+
 
 
         return $this->render('index', [
