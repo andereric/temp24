@@ -22,6 +22,7 @@ foreach ($temperatures as $temperature) {
     $datapoints[] = ['y' => $temperature->temperature, 'label' => $temperature->time];
 }
 
+
 $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascript object notation, võtab sisse array ja teeb selle jsoniks
 
 ?>
@@ -33,7 +34,6 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
             echo Html::a($sensors, ['', 'sid' => $sensors], ['class' => 'btn btn-default']);
         }
         ?>
-
 
 <!-- Loodud sensorinimedega nupud + perioodinupud + algus ning lõpu vahemike jaoks mõeldud lahtrid (käsitsi valimisiseks) + töötav ChartJS graafik -->
 
@@ -64,7 +64,11 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
             <h2>Palun vali sensor</h2>
 
         <?php elseif ($temperatures): ?> <!--- https://www.php.net/manual/en/control-structures.alternative-syntax.php --->
+            <p style="color:seagreen"><strong>Keskmine: </strong><?php echo $average; ?></p>
+            <p style="color:dodgerblue"><strong>Miinimum: </strong><?php echo $minimum; ?></p>
+            <p style="color:red"><strong>Maksimum: </strong><?php echo $maximum; ?></p>
             <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
         <?php else: ?>
             <h2>Andmed puuduvad</h2>
         <?php endif; ?>

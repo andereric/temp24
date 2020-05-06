@@ -35,11 +35,13 @@ class TemperaturesController extends Controller
      * Lists all Temperatures models.
      * @return mixed
      */
-    public function actionIndex($sid = null, $vahemik = null) // () hakkab parameetrit getist otsima
+    public function actionIndex($sid = null, $vahemik = null, $average = null, $minimum = null, $maximum = null) // () hakkab parameetrit getist otsima
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Temperatures::find(),
         ]);
+
+
 
         $sensors = Sensors::find()->all();
         if ($vahemik) {
@@ -48,7 +50,7 @@ class TemperaturesController extends Controller
                 $end = 'NOW()';
             } elseif ($vahemik == 'eile') {
                 $start = 'DATE_SUB(CURDATE(), INTERVAL 1 DAY) ';
-                $end = 'ADDTIME(DATE_SUB(CURDATE(), INTERVAL 1 DAY), "23:59:59")' ;
+                $end = 'ADDTIME(DATE_SUB(CURDATE(), INTERVAL 1 DAY), "23:59:59")';
             } elseif ($vahemik == 'nadal') {
                 $start = 'DATE_SUB(CURDATE(), INTERVAL(WEEKDAY(CURDATE())) DAY)';
                 $end = 'NOW()';
@@ -56,11 +58,15 @@ class TemperaturesController extends Controller
                 $start = 'DATE_FORMAT(NOW() ,\'%Y-%m-01\')';
                 $end = 'NOW()';
             }
-
             $temperatures = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->all();
-
+            $average = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->average('temperature');
+            $minimum = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->min('temperature');
+            $maximum = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)])->max('temperature');
         } else {
             $temperatures = Temperatures::find()->where(['sid' => $sid])->all(); // otsib temperatuuri tabelis sid põhjal kõikide temperatuuride read
+            $average = Temperatures::find()->where(['sid' => $sid])->average('temperature');
+            $minimum = Temperatures::find()->where(['sid' => $sid])->min('temperature');
+            $maximum = Temperatures::find()->where(['sid' => $sid])->max('temperature');
         };
 
 
@@ -69,6 +75,9 @@ class TemperaturesController extends Controller
             'sensors' => $sensors,
             'temperatures' => $temperatures,
             'sid' => $sid,
+            'average' => $average,
+            'minimum' => $minimum,
+            'maximum' => $maximum,
         ]);
     }
 
@@ -131,6 +140,7 @@ class TemperaturesController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
+
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
