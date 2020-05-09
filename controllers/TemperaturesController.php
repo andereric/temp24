@@ -35,7 +35,7 @@ class TemperaturesController extends Controller
      * Lists all Temperatures models.
      * @return mixed
      */
-    public function actionIndex($sid = null, $vahemik = null, $average = null, $minimum = null, $maximum = null, $rightNow = null) // () hakkab parameetrit getist otsima
+    public function actionIndex($sid = null, $vahemik = null, $average = null, $minimum = null, $maximum = null, $rightNow = null, $precision = 1) // () hakkab parameetrit getist otsima
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Temperatures::find(),
@@ -64,8 +64,6 @@ class TemperaturesController extends Controller
             $minimum = $whereClause->min('temperature');
             $maximum = $whereClause->max('temperature');
             $rightNow = Temperatures::find()->where(['sid' => $sid])->orderBy(['id' => SORT_DESC])->one();
-
-
         } else {
             $whereClauseElse = Temperatures::find()->where(['sid' => $sid]);
             $temperatures = Temperatures::find()->where(['sid' => $sid])->all(); // otsib temperatuuri tabelis sid põhjal kõikide temperatuuride read
@@ -87,6 +85,7 @@ class TemperaturesController extends Controller
             'minimum' => $minimum,
             'maximum' => $maximum,
             'rightNow' => $rightNow,
+            'precision' => $precision,
         ]);
     }
 

@@ -61,6 +61,16 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
             <br>
             <?= Html::a('Vaata', ['', 'vahemik' => 'valikvahemik', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
         </div>
+
+
+        <br>
+        <br>
+        <label>Vali täpsus:</label>
+            <?= Html::a('1', ['', 'precision' => '0', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('0.1', ['', 'precision' => '1', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('0.01', ['', 'precision' => '2', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('0.001', ['', 'precision' => '3', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
+
         <?php endif; ?>
         <br><br>
 
@@ -72,10 +82,10 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
             <h2>Palun vali sensor</h2>
 
         <?php elseif ($temperatures): ?> <!--- https://www.php.net/manual/en/control-structures.alternative-syntax.php --->
-            <p style="color:seagreen"><strong>Keskmine: </strong><?php echo $average; ?> kraadi</p>
-            <p style="color:dodgerblue"><strong>Miinimum: </strong><?php echo $minimum; ?> kraadi</p>
-            <p style="color:red"><strong>Maksimum: </strong><?php echo $maximum; ?> kraadi</p>
-            <p><strong>Hetkel: </strong><?php echo $rightNow->temperature; ?> kraadi</p>
+            <p style="color:seagreen"><strong>Keskmine: </strong><?php echo round($average, $precision); ?> kraadi</p>
+            <p style="color:dodgerblue"><strong>Miinimum: </strong><?php echo round($minimum, $precision); ?> kraadi</p>
+            <p style="color:red"><strong>Maksimum: </strong><?php echo round($maximum, $precision); ?> kraadi</p>
+            <p><strong>Hetkel: </strong><?php echo round($rightNow->temperature, $precision); ?> kraadi</p> <!-- Vajalik oli valida string arrayst -->
             <div id="chartContainer" style="height: 370px; width: 100%;"></div>
 
         <?php else: ?>s
