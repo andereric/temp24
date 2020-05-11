@@ -51,5 +51,10 @@ class Temperatures extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getTemperatureTime()
+    {
+        return $this->hasOne(Temperatures::find(), ['id' => 'time']);
+    }
+
 
 }

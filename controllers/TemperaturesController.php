@@ -2,11 +2,13 @@
 
 namespace app\controllers;
 
+use app\models\filters\TemperaturesFilter;
 use app\models\Sensors;
 use Yii;
 use app\models\Temperatures;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
+use yii\debug\models\timeline\Search;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -35,49 +37,21 @@ class TemperaturesController extends Controller
      * Lists all Temperatures models.
      * @return mixed
      */
-    public function actionIndex($sid = null, $vahemik = null, $average = null, $minimum = null, $maximum = null, $rightNow = null, $precision = 1) // () hakkab parameetrit getist otsima
+    public function actionIndex($sid = null, $vahemik = null,  $precision = 1) // () hakkab parameetrit getist otsima, sulgude sees määratakse default väärtus
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Temperatures::find(),
-        ]);
 
-
+        $temperaturesFilter = new TemperaturesFilter();
+        $query = $temperaturesFilter->search(['sid' => $sid, 'vahemik' => $vahemik, 'precision' => $precision]);
 
         $sensors = Sensors::find()->all();
-        if ($vahemik) {
-            if ($vahemik == 'tana') {
-                $start = 'CURDATE()';
-                $end = 'NOW()';
-            } elseif ($vahemik == 'eile') {
-                $start = 'DATE_SUB(CURDATE(), INTERVAL 1 DAY) ';
-                $end = 'ADDTIME(DATE_SUB(CURDATE(), INTERVAL 1 DAY), "23:59:59")';
-            } elseif ($vahemik == 'nadal') {
-                $start = 'DATE_SUB(CURDATE(), INTERVAL(WEEKDAY(CURDATE())) DAY)';
-                $end = 'NOW()';
-            } else {
-                $start = 'DATE_FORMAT(NOW() ,\'%Y-%m-01\')';
-                $end = 'NOW()';
-            }
-            $whereClause = Temperatures::find()->where(['sid' => $sid])->andWhere(['between', 'time', new Expression($start), new Expression($end)]);
-            $temperatures = $whereClause->all();
-            $average = $whereClause->average('temperature');
-            $minimum = $whereClause->min('temperature');
-            $maximum = $whereClause->max('temperature');
-            $rightNow = Temperatures::find()->where(['sid' => $sid])->orderBy(['id' => SORT_DESC])->one();
-        } else {
-            $whereClauseElse = Temperatures::find()->where(['sid' => $sid]);
-            $temperatures = Temperatures::find()->where(['sid' => $sid])->all(); // otsib temperatuuri tabelis sid põhjal kõikide temperatuuride read
-            $average = $whereClauseElse->average('temperature');
-            $minimum = $whereClauseElse->min('temperature');
-            $maximum = $whereClauseElse->max('temperature');
-            $rightNow = $whereClauseElse->orderBy(['id' => SORT_DESC])->one();
-        };
-
-
+            $temperatures = $query->all();
+            $average = $query->average('temperature');
+            $minimum = $query->min('temperature');
+            $maximum = $query->max('temperature');
+            $rightNow = $query->orderBy(['id' => SORT_DESC])->one();
 
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
             'sensors' => $sensors,
             'temperatures' => $temperatures,
             'sid' => $sid,

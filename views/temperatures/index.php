@@ -10,7 +10,6 @@ use yii\helpers\Url;
 // array [] masiiv
 
 /* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $sensors \app\models\Sensors[] */
 /* @var $temperatures \app\models\Temperatures[]|null */ // t
 
@@ -48,16 +47,26 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
             <?= Html::a('KUU', ['', 'vahemik' => 'kuu', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
             <br>
             <br>
+
+
         <div class="wrapper">
+
+            <h2>Manuaalne otsing:</h2>
             <label>Algus:</label>
-            <div class="wrapper">
+            <br>
+            <div class="col-sm-3">
                 <input type="datetime-local" name="choosebegin" class="form-control" value="">
             </div>
             <br>
+            <br><br>
+
             <label>Lõpp:</label>
-            <div class="wrapper">
+            <br>
+            <div class="col-sm-3">
                 <input type="datetime-local" name="chooseend" class="form-control" value="">
             </div>
+            <br>
+            <br>
             <br>
             <?= Html::a('Vaata', ['', 'vahemik' => 'valikvahemik', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
         </div>
@@ -65,7 +74,7 @@ $andmepunktid = Json::encode($datapoints); // php json encode, json =  javascrip
 
         <br>
         <br>
-        <label>Vali täpsus:</label>
+        <label>Vali täpsus:</label><br>
             <?= Html::a('1', ['', 'precision' => '0', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('0.1', ['', 'precision' => '1', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('0.01', ['', 'precision' => '2', 'sid' => $sid], ['class' => 'btn btn-primary']) ?>
