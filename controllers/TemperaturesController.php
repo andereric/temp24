@@ -37,29 +37,19 @@ class TemperaturesController extends Controller
      * Lists all Temperatures models.
      * @return mixed
      */
-    public function actionIndex($sid = null, $vahemik = null,  $precision = 1) // () hakkab parameetrit getist otsima, sulgude sees määratakse default väärtus
+    public function actionIndex()
     {
-
         $temperaturesFilter = new TemperaturesFilter();
-        $query = $temperaturesFilter->search(['sid' => $sid, 'vahemik' => $vahemik, 'precision' => $precision]);
-
-        $sensors = Sensors::find()->all();
-            $temperatures = $query->all();
-            $average = $query->average('temperature');
-            $minimum = $query->min('temperature');
-            $maximum = $query->max('temperature');
-            $rightNow = $query->orderBy(['id' => SORT_DESC])->one();
-
+        $query = $temperaturesFilter->search(Yii::$app->request->get());
 
         return $this->render('index', [
-            'sensors' => $sensors,
-            'temperatures' => $temperatures,
-            'sid' => $sid,
-            'average' => $average,
-            'minimum' => $minimum,
-            'maximum' => $maximum,
-            'rightNow' => $rightNow,
-            'precision' => $precision,
+            'sensors' => Sensors::find()->all(),
+            'temperatures' => $query->all(),
+            'average' => $query->average('temperature'),
+            'minimum' => $query->min('temperature'),
+            'maximum' => $query->max('temperature'),
+            'rightNow' => $query->orderBy(['id' => SORT_DESC])->one(),
+            'temperaturesFilter' => $temperaturesFilter,
         ]);
     }
 

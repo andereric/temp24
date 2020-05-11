@@ -5,6 +5,7 @@ namespace app\models\filters;
 use app\models\Temperatures;
 use yii\data\ActiveDataProvider;
 use yii\db\Expression;
+use yii\validators\DateValidator;
 
 class TemperaturesFilter extends \app\models\Temperatures
 {
@@ -12,13 +13,16 @@ class TemperaturesFilter extends \app\models\Temperatures
     public $sid;
     public $vahemik;
     public $precision = 1;
+    public $startTime;
+    public $endTime;
 
     // now set the rules to make those attributes safe
     public function rules()
     {
         return [
-            [['sid', 'vahemik'], 'string'], // validaator, muidu ei saa loadida väärtusi
+            [['sid', 'vahemik'], 'string'], // Validaator
             [['precision'], 'integer'],
+            [['startTime', 'endTime'], 'date', 'type' => DateValidator::TYPE_DATETIME, 'format' => 'php:Y-m-d H:i', 'message' => 'Midagi on katki'] // datetime validaator
         ];
     }
 
@@ -26,10 +30,14 @@ class TemperaturesFilter extends \app\models\Temperatures
     {
         // create ActiveQuery
         $query = \app\models\Temperatures::find();
-
-        if (!($this->load($params) && $this->validate())) {
+        $this->load($params, '');
+        $this->load($params);
+        if (!$this->validate()) { // Validaator.
             return $query;
         }
+        $query->andFilterWhere(['sid' => $this->sid]);
+        $query->andFilterWhere(['>', 'time', $this->startTime]);
+        $query->andFilterWhere(['<', 'time', $this->endTime]);
 
         if ($this->vahemik) {
             if ($this->vahemik == 'tana') {
@@ -45,9 +53,10 @@ class TemperaturesFilter extends \app\models\Temperatures
                 $start = 'DATE_FORMAT(NOW() ,\'%Y-%m-01\')';
                 $end = 'NOW()';
             }
-            $query->where(['sid' => $this->sid ])->andWhere(['between', 'time', new Expression($start), new Expression($end)]);
-
+            $query->andWhere(['between', 'time', new Expression($start), new Expression($end)]);
         }
+
+
 
         return $query;
     }
